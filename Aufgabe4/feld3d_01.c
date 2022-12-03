@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		matrix_3d = felder_erstellen_wie_java(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n)
+		matrix_3d = felder_erstellen_wie_java(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
 	printf("Das Feld mittels der Indexschreibweise ausgeben:\n");
 	feld_ausgeben_mit_indices(matrix_3d, ebenen_n, zeilen_n, spalten_n);
@@ -184,6 +184,7 @@ double ***zugriffsfelder_erstellen(const double *feld_anf_ptr,
 								   int zeilen_n,
 								   int spalten_n)
 {
+
 	// Rueckgabewert
 	double ***matrix_3d;
 	int ebene, zeile;
@@ -270,15 +271,7 @@ void feld3d_init(double *matrix_3d_anf,
 	}		  // ebene
 } // feld3d_init()
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-////////////////////////               ///////////////////////////
-////////////////////////  Aufgabe 4.3  ///////////////////////////
-////////////////////////               ///////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
+// * AUFGABE 4.3
 double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 									int ebenen_n,
 									int zeilen_n,
@@ -290,34 +283,48 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 	double *zeilen_anfangs_ptr = (double *)feld_anf_ptr;
 	double *lauf_ptr;
 
+	lauf_ptr = zeilen_anfangs_ptr;
+
 	// Das Feld mit den doppelt indirekten Zeigern einrichten
 	if (0)
-		matrix_3d = (double ***)calloc(ebenen_n, sizeof(double **));
+		matrix_3d = (double ***)calloc(ebenen_n * spalten_n, sizeof(double **));
 	else
-		matrix_3d = (double ***)calloc(ebenen_n, sizeof(*matrix_3d));
+		matrix_3d = (double ***)calloc(ebenen_n * spalten_n, sizeof(*matrix_3d));
 	assert(matrix_3d != NULL);
 
 	for (ebene = 0; ebene < ebenen_n; ebene++)
 	{
 		matrix_3d[ebene] = (double **)calloc(zeilen_n, sizeof(double *));
 		assert(matrix_3d[ebene] != NULL);
+
+		if (1)
+		{
+			printf("+ebenen_anfangs_ptr = %p\n", zeilen_anfangs_ptr);
+		}
 		for (zeile = 0; zeile < zeilen_n; zeile++)
 		{
 			matrix_3d[ebene][zeile] = zeilen_anfangs_ptr;
-			assert(matrix_3d[ebene]{spalte} != NULL);
-			for (spalte = 0, spalte < spalten_n; spalte++)
+			assert(matrix_3d[ebene][zeile] != NULL);
+
+			if (1)
+			{
+				printf("+-+zeilen_anfangs_ptr = %p\n", zeilen_anfangs_ptr);
+			}
+			for (spalte = 0; spalte < spalten_n; spalte++)
 			{
 
-				matrix_3d[ebene][zeile][spalte] = ;
+				matrix_3d[ebene][zeile][spalte];
+				// ? Warum kommt hier ein Fehler auf?
+				// assert(matrix_3d[ebene][zeile][spalte] != NULL);
 				*lauf_ptr++ = ebene * 100 + zeile * 10 + spalte;
 
 				if (1)
 				{
-					printf("zeilen_anfangs_ptr = %p\n", zeilen_anfangs_ptr);
+					printf("| +-spalten_anfangs_ptr = %p\n", zeilen_anfangs_ptr);
 				}
 			}
 
-			zeilen_anfangs_ptr += spalten;
+			zeilen_anfangs_ptr += spalte;
 		}
 	}
 
