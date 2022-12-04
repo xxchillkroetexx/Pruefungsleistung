@@ -35,7 +35,11 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 									int zeilen_n,
 									int spalten_n);
 // ! Aufgabe 4.4
-void zugriffsfelder_erstellen_by_ref();
+void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
+									 const double *feld_anf_ptr,
+									 int ebenen_n,
+									 int zeilen_n,
+									 int spalten_n);
 
 /**
  * Hauptprgramm.
@@ -97,11 +101,19 @@ int main(int argc, char *argv[])
 		// Standard
 		matrix_3d = zugriffsfelder_erstellen(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
-	else
+	else if (0)
 	{
 		// ! Aufgabe 4.3
+		// TODO
+		// ! Funktioniert NICHT!
 		matrix_3d = felder_erstellen_wie_java(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
+	else
+	{
+		// ! Aufgabe 4.4
+		zugriffsfelder_erstellen_by_ref(matrix_3d, matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
+	}
+
 	printf("Das Feld mittels der Indexschreibweise ausgeben:\n");
 	feld_ausgeben_mit_indices(matrix_3d, ebenen_n, zeilen_n, spalten_n);
 
@@ -252,7 +264,7 @@ void feld_ausgeben_mit_indices(const double ***matrix_3d,
 
 /**
  * 3D-Matrix initialisieren
- * ! Aufgabe 4.2
+ * ! Aufgabe 4.1
  */
 void feld3d_init(double *matrix_3d_anf,
 				 int ebenen_n,
@@ -312,14 +324,15 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
  * ! Aufgabe 4.4
  * TODO
  */
-void zugriffsfelder_erstellen_by_ref(const double *feld_anf_ptr,
+void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
+									 const double *feld_anf_ptr,
 									 int ebenen_n,
 									 int zeilen_n,
 									 int spalten_n)
 {
 
 	// Rueckgabewert
-	double ***matrix_3d;
+	// double ***matrix_3d;
 	int ebene, zeile;
 	double *zeilen_anfangs_ptr = (double *)feld_anf_ptr;
 
@@ -343,7 +356,6 @@ void zugriffsfelder_erstellen_by_ref(const double *feld_anf_ptr,
 		}
 	}
 
-	return matrix_3d;
 } // zugriffsfelder_erstellen_by_ref
 
 /**
@@ -386,9 +398,9 @@ void zugriffsfelder_erstellen_by_ref(const double *feld_anf_ptr,
 /**
  * ! Aufgabe 4.10
  * TODO
-*/
+ */
 
 /**
  * ! Aufgabe 4.11
  * TODO
-*/
+ */
