@@ -292,18 +292,6 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 
 	double ***matrix_3d;
 	int ebene, zeile, spalte;
-	// Speicher für Ebenen allokieren
-	matrix_3d = (double ***)malloc(sizeof(double ***) * ebenen_n);
-	for (ebene = 0; ebene < ebenen_n; ebene++)
-	{
-		// Speicher für Zeilen allokieren
-		matrix_3d[ebene] = (double **)malloc(sizeof(double *) * zeilen_n);
-		for (zeile = 0; ebene < ebenen_n; ebene++) // * Zeilen
-		{
-			// Speicher für Spalten allokoeren
-			matrix_3d[ebene][zeile] = (double *)malloc(sizeof(double) * spalten_n);
-		}
-	}
 
 	// Feldindex im Feld Speichern
 	for (ebene = 0; ebene < ebenen_n; ebene++)
@@ -322,6 +310,7 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 
 /**
  * ! Aufgabe 4.4
+ * TODO
  */
 void zugriffsfelder_erstellen_by_ref(const double *feld_anf_ptr,
 									 int ebenen_n,
@@ -329,4 +318,77 @@ void zugriffsfelder_erstellen_by_ref(const double *feld_anf_ptr,
 									 int spalten_n)
 {
 
+	// Rueckgabewert
+	double ***matrix_3d;
+	int ebene, zeile;
+	double *zeilen_anfangs_ptr = (double *)feld_anf_ptr;
+
+	// Das Feld mit den doppelt indirekten Zeigern einrichten
+	if (0)
+		matrix_3d = (double ***)calloc(ebenen_n, sizeof(double **));
+	else
+		matrix_3d = (double ***)calloc(ebenen_n, sizeof(*matrix_3d));
+	assert(matrix_3d != NULL);
+
+	for (ebene = 0; ebene < ebenen_n; ebene++)
+	{
+		matrix_3d[ebene] = (double **)calloc(zeilen_n, sizeof(double *));
+		assert(matrix_3d[ebene] != NULL);
+		for (zeile = 0; zeile < zeilen_n; zeile++)
+		{
+			matrix_3d[ebene][zeile] = zeilen_anfangs_ptr;
+			if (1)
+				printf("zeilen_anfangs_ptr = %p\n", zeilen_anfangs_ptr);
+			zeilen_anfangs_ptr += spalten_n;
+		}
+	}
+
+	return matrix_3d;
 } // zugriffsfelder_erstellen_by_ref
+
+/**
+ * ! Aufgabe 4.5
+ * Wenn der Speicher am Ende des Programms nicht wieder freigegeben wird, kann der Speicher immer weiter wachsen.
+ * Auch kann es sein, dass der Heap-Speicher irgendwann voll ist, oder so stark fragmentiert ist, dass rein rechnerisch
+ *  noch ein neues Element auf dem Speicher angelegt werden könnte, aber die freien Stellen nicht zusammenhängen,
+ */
+
+/**
+ * ! Aufgabe 4.6
+ * Als Speicherleiche bezeichnet man Daten, die zwar noch auf dem Speicher liegen, aber nicht mehr benötigt werden.
+ */
+
+/**
+ * ! Aufgabe 4.7
+ * Speicherfragmentierung entsteht, wenn man Daten im Speicher löscht, die zwischen anderen Datenblöcken liegen. Dadurch entsteht
+ *  zwischen zwei Datenblöcken eine Lücke an freiem Speicher. Je nachdem, wie viele solcher Lücken im Speicher vorhanden
+ *  sind, spricht man von mehr oder weniger starker Fragmentierung. Der Speicher muss dann defragmentiert werden. Das
+ *  bedeutet, dass der belegte Speicher zusammengerückt wird und der freie Speicher am Ende als ein großer Bereich zur
+ *  Verfügung steht.
+ */
+
+/**
+ * ! Aufgabe 4.8
+ * Ist der Heap-Speicher stark fragmentiert, kann die Situation auftreten, dass die Summe des freien Speichers ausreicht,
+ *  einen neuen Datenblock zu speichern, aber die Lücken zwischen dem belegten Speicher als einzelnes nicht groß genug sind.
+ *  Weil Speicher nur am Stück reserviert werden kann, ist die Speicherreservierung nicht möglich.
+ */
+
+/**
+ * ! Aufgabe 4.9
+ * Bei der Festplatte schlägt sich eine starke Fragmentierung hauptsächlich in einer verschlechterten Geschwindigkeit nieder,
+ *  weil die Daten von verschiedenen Stellen der Platte gelesen werden müssen. Schreibt die Festplatte hinter eine Datei andere
+ *  Datenblöcke, so werden beim Vergrößern der Datei die neuen Daten einfach hinter die jetzt neuen Datenblöcke geschrieben.
+ * Beim Heap-Speicher hingegen kann bei einer zu starken Fragmentierung kein weiterer Datenblock gespeichert werden und die
+ *  Speicherbelegung schlägt fehl. Das Programm stürzt ab.
+ */
+
+/**
+ * ! Aufgabe 4.10
+ * TODO
+*/
+
+/**
+ * ! Aufgabe 4.11
+ * TODO
+*/
