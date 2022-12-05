@@ -35,7 +35,7 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 									int zeilen_n,
 									int spalten_n);
 // ! Aufgabe 4.4
-void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
+void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 									 const double *feld_anf_ptr,
 									 int ebenen_n,
 									 int zeilen_n,
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	printf("Zugriffsfelder laut Folie 421 erstellen, um Feldzugriffe mittels\n"
 		   "  der (gut lesbaren!) Indexschreibweise zu ermoeglichen ...\n");
 
-	if (1)
+	if (0)
 	{
 		// Standard
 		matrix_3d = zugriffsfelder_erstellen(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
@@ -105,13 +105,13 @@ int main(int argc, char *argv[])
 	{
 		// ! Aufgabe 4.3
 		// TODO
-		// ! Funktioniert NICHT!
+		// ! nixe funktionieren!
 		matrix_3d = felder_erstellen_wie_java(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
 	else
 	{
 		// ! Aufgabe 4.4
-		zugriffsfelder_erstellen_by_ref(matrix_3d, matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
+		zugriffsfelder_erstellen_by_ref(&matrix_3d, matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
 
 	printf("Das Feld mittels der Indexschreibweise ausgeben:\n");
@@ -294,6 +294,7 @@ void feld3d_init(double *matrix_3d_anf,
 
 /**
  * ! Aufgabe 4.3
+ * TODO
  */
 double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 									int ebenen_n,
@@ -322,9 +323,8 @@ double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
 
 /**
  * ! Aufgabe 4.4
- * TODO
  */
-void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
+void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 									 const double *feld_anf_ptr,
 									 int ebenen_n,
 									 int zeilen_n,
@@ -332,7 +332,7 @@ void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
 {
 
 	// Rueckgabewert
-	// double ***matrix_3d;
+	double ***matrix_3d;
 	int ebene, zeile;
 	double *zeilen_anfangs_ptr = (double *)feld_anf_ptr;
 
@@ -355,6 +355,8 @@ void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
 			zeilen_anfangs_ptr += spalten_n;
 		}
 	}
+	
+	*matrix_3do = matrix_3d;
 
 } // zugriffsfelder_erstellen_by_ref
 
@@ -402,5 +404,7 @@ void zugriffsfelder_erstellen_by_ref(const double ***matrix_3d,
 
 /**
  * ! Aufgabe 4.11
- * TODO
+ * Richtig wäre das Anlegen eines neuen Zeigers. Erst wenn die Speicherzuweisung erfolgreich war wird der Zeiger heap_ptr geändert.
+ * Schlägt die Speicherzuweisung fehl, wird der heap_ptr genullt und der Speicher, auf den der Pointer vorher gezeigt hat, wird zu 
+ *  einer Speicherleiche.
  */
