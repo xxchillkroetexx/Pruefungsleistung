@@ -11,7 +11,7 @@
 //  Betriebssystem und dgl. abzufragen.
 //  
 // Entweder so ....
-#pragma once
+//#pragma once
 // ... oder so:
 #ifndef DATENTYPEN_H
 #define DATENTYPEN_H

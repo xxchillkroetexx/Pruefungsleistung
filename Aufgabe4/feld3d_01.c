@@ -18,7 +18,7 @@ double ***zugriffsfelder_erstellen(const double *feld_anf_ptr,
 								   int ebenen_n,
 								   int zeilen_n,
 								   int spalten_n);
-void feld_ausgeben_mit_indices(const double ***matrix_3d,
+void feld_ausgeben_mit_indices(double ***matrix_3d,
 							   int ebenen_n,
 							   int zeilen_n,
 							   int spalten_n);
@@ -30,10 +30,10 @@ void feld3d_init(double *matrix_3d_anf,
 				 int spalten_n);
 // ! Aufgabe 4.3
 // Ein Feld wie in Java erstellen
-double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
-									int ebenen_n,
-									int zeilen_n,
-									int spalten_n);
+void felder_erstellen_wie_java(double ***matrix_3d,
+							   int ebenen_n,
+							   int zeilen_n,
+							   int spalten_n);
 // ! Aufgabe 4.4
 void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 									 const double *feld_anf_ptr,
@@ -70,25 +70,25 @@ int main(int argc, char *argv[])
 	assert(matrix_3d_anf != NULL);
 
 	printf("Das Feld initialisieren...\n");
-	feld3d_init(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
-
 	/*
-	! Aufgabe 4.1
-	* Wird durch feld3d_init() anbgebilet
-	lauf_ptr = matrix_3d_anf;
-	for (ebene = 0; ebene < ebenen_n; ebene++)
-	{
-		for (zeile = 0; zeile < zeilen_n; zeile++)
-		{
-			for (spalte = 0; spalte < spalten_n; spalte++)
-			{
-				// Trick: Den 3D-Index als Inhalt des Feldelementes speichern
-				*lauf_ptr++ = ebene * 100 + zeile * 10 + spalte;
-			} // spalte
-		}	  // zeile
-	}		  // ebene
+		! Aufgabe 4.1
+		* Wird durch feld3d_init() anbgebilet
 
-	*/
+		lauf_ptr = matrix_3d_anf;
+		for (ebene = 0; ebene < ebenen_n; ebene++)
+		{
+			for (zeile = 0; zeile < zeilen_n; zeile++)
+			{
+				for (spalte = 0; spalte < spalten_n; spalte++)
+				{
+					// Trick: Den 3D-Index als Inhalt des Feldelementes speichern
+					*lauf_ptr++ = ebene * 100 + zeile * 10 + spalte;
+				} // spalte
+			}	  // zeile
+		}		  // ebene
+		/*
+		 */
+	feld3d_init(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 
 	printf("Das Feld ausgeben (mit linearem Index):\n");
 	feld_ausgeben(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 	if (0)
 	{
 		// Standard
+		printf("zugriffsfelder_erstellen()\n");
 		matrix_3d = zugriffsfelder_erstellen(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
 	else if (0)
@@ -106,11 +107,13 @@ int main(int argc, char *argv[])
 		// ! Aufgabe 4.3
 		// TODO
 		// ! nixe funktionari!
-		matrix_3d = felder_erstellen_wie_java(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
+		printf("felder_erstellen_wie_java()\n");
+		felder_erstellen_wie_java(matrix_3d, ebenen_n, zeilen_n, spalten_n);
 	}
 	else
 	{
 		// ! Aufgabe 4.4
+		printf("zugriffsfelder_erstellen_by_ref()\n");
 		zugriffsfelder_erstellen_by_ref(&matrix_3d, matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
 
@@ -236,7 +239,7 @@ double ***zugriffsfelder_erstellen(const double *feld_anf_ptr,
  * geschieht und daher die Schreibweise mit eckigen Klammern
  * stattfindet.
  */
-void feld_ausgeben_mit_indices(const double ***matrix_3d,
+void feld_ausgeben_mit_indices(double ***matrix_3d,
 							   int ebenen_n,
 							   int zeilen_n,
 							   int spalten_n)
@@ -296,29 +299,55 @@ void feld3d_init(double *matrix_3d_anf,
  * ! Aufgabe 4.3
  * TODO
  */
-double ***felder_erstellen_wie_java(const double *feld_anf_ptr,
-									int ebenen_n,
-									int zeilen_n,
-									int spalten_n)
+void felder_erstellen_wie_java(double ***matrix_3d,
+							   int ebenen_n,
+							   int zeilen_n,
+							   int spalten_n)
 {
-	// Rueckgabewert
-
-	double ***matrix_3d;
 	int ebene, zeile, spalte;
 
-	// Feldindex im Feld Speichern
+	int bytes_n;
+	double *dbl1_ptr;
+	double *matrix_3d_anf = **matrix_3d;
+
+	bytes_n = sizeof(double *) * zeilen_n;
 	for (ebene = 0; ebene < ebenen_n; ebene++)
 	{
+		/* Speicher belegen. */
+		matrix_3d[ebene] = (double **)malloc(bytes_n);
+		if (matrix_3d[ebene] == NULL)
+		{
+			printf("Kein Speicher mehr verfuegbar fuer matrix_3d[ebene=%d].\n",
+				   ebene);
+			exit(EXIT_FAILURE);
+		}
+		/* Aktuelles Zeigerfeld durchlaufen und jeweils
+			die Zeilenanfangszeiger einspeichern. */
+		dbl1_ptr = matrix_3d_anf + ebene * zeilen_n * spalten_n;
 		for (zeile = 0; zeile < zeilen_n; zeile++)
 		{
-			for (spalte = 0; spalte < spalten_n; spalte++)
-			{
-				matrix_3d[ebene][zeile][spalte] = ebene * 100 + zeile * 10 + spalte;
-			}
+			*(*(matrix_3d + ebene) + zeile) = dbl1_ptr;
+			/* Zeilanfangszeiger auf Anfang der naechsten
+				Zeile erhoehen. */
+			dbl1_ptr += spalten_n;
 		}
 	}
 
-	return matrix_3d;
+	// Feldindex im Feld Speichern
+	// for (ebene = 0; ebene < ebenen_n; ebene++)
+	//{
+	//	for (zeile = 0; zeile < zeilen_n; zeile++)
+	//	{
+	//		for (spalte = 0; spalte < spalten_n; spalte++)
+	//		{
+	//			// ? matrix_3d[ebene][zeile][spalte] = ebene * 100 + zeile * 10 + spalte;
+	//
+	//			index = ebene * zeilen_n * spalten_n + zeile * spalten_n + spalte;
+	//			*(feld_anf_ptr + index) = ebene * 100 + zeile * 10 + spalte;
+	//			printf("matrix_3d_anf[ebene=%d][zeile=%d][spalte=%d]= %05.1lf'\n", ebene, zeile, spalte, *(feld_anf_ptr + index));
+	//		}
+	//	}
+	//}
 } //  felder_erstellen_wie_java
 
 /**

@@ -40,10 +40,16 @@ void atexit_funktion2(void);
 int liste_durchlaufen(struct flexibler_struct_typ *einstiegs_ptr,
 					  enum richtungs_typ richtung,
 					  int ausgabe_fkt_ptr(const struct flexibler_struct_typ *));
-void liste_einfuegen(struct flexibler_struct_typ *anfang_ptr,
-					 struct flexibler_struct_typ *ende_ptr,
+// ! Aufgabe 5.1
+void liste_einfuegen(struct flexibler_struct_typ **anfang_ptr,
+					 struct flexibler_struct_typ **ende_ptr,
 					 struct flexibler_struct_typ *neu_ptr,
 					 struct flexibler_struct_typ *liste_ptr);
+
+// ! Aufgabe 5.2
+struct flexibler_struct_typ *liste_loeschen(struct flexibler_struct_typ **anfang_ptr,
+											struct flexibler_struct_typ **ende_ptr,
+											struct flexibler_struct_typ *loesch_ptr);
 
 /**************************************
  *                                    *
@@ -56,12 +62,17 @@ int main(int argc, char *argv[])
 	/* Lokale Variablen */
 	// Adresse des 1. Listenelementes
 	struct flexibler_struct_typ *anfang_ptr = NULL;
+	struct flexibler_struct_typ *reserve_anf_ptr = NULL; // ! Aufgabe 5.2
 	// Adresse des letzten Listenelementes
 	struct flexibler_struct_typ *ende_ptr = NULL;
+	struct flexibler_struct_typ *reserve_ende_ptr = NULL; // ! Aufgabe 5.2
 	// Adresse eines jeden neu eingerichteten Elementes
 	struct flexibler_struct_typ *neu_ptr;
 	// Zeigervariable zum Durchlaufen einer verketteten Liste
 	struct flexibler_struct_typ *lauf_ptr;
+	// ! Aufgabe 5.2
+	// Pointer für ein gelöschtes Element, das der Reserveliste hinzugefügt werden soll
+	struct flexibler_struct_typ *reserve_ptr;
 	// Das ist ein Funktionszeiger, der auf eine Funktion zeigen kann,
 	//   wie sie von ateixt() erwartet wird.
 	void (*atexit_fkt_ptr)(void) = NULL;
@@ -128,9 +139,9 @@ int main(int argc, char *argv[])
 	printf("Adresse des neuen Heap-Elementes = %p\n", neu_ptr);
 	// 3.) Element in die Liste einfuegen (die derzeit noch leer ist)
 	// ! Aufgabe 5.1
-	if (0)
+	if (1)
 	{
-		liste_einfuegen(anfang_ptr, ende_ptr, neu_ptr, anfang_ptr);
+		liste_einfuegen(&anfang_ptr, &ende_ptr, neu_ptr, neu_ptr);
 	}
 	else
 	{
@@ -164,7 +175,7 @@ int main(int argc, char *argv[])
 	// ! Aufgabe 5.1
 	if (1)
 	{
-		liste_einfuegen(anfang_ptr, ende_ptr, neu_ptr, anfang_ptr->next_ptr); // ? Wie kann ich den LISTE_PTR bestimmen?
+		liste_einfuegen(&anfang_ptr, &ende_ptr, neu_ptr, ende_ptr->next_ptr);
 	}
 	else
 	{
@@ -187,7 +198,7 @@ int main(int argc, char *argv[])
 	// ! Aufgabe 5.1
 	if (1)
 	{
-		liste_einfuegen(anfang_ptr, ende_ptr, neu_ptr, anfang_ptr->next_ptr); // ? Wie kann ich den LISTE_PTR bestimmen?
+		liste_einfuegen(&anfang_ptr, &ende_ptr, neu_ptr, ende_ptr->next_ptr);
 	}
 	else
 	{
@@ -222,6 +233,59 @@ int main(int argc, char *argv[])
 	printf("Durchlaufen mit allgemeiner Funktion (OHNE Ausgabe):\n");
 	n = liste_durchlaufen(anfang_ptr, vorwaerts, NULL);
 	printf("Anzahl der durchlaufenen Listenelemente: %d\n", n);
+
+	// ! Aufgabe 5.2
+	// Mittleres Element löschen
+	reserve_ptr = liste_loeschen(&anfang_ptr, &ende_ptr, anfang_ptr->next_ptr);
+	// gelöschtes Element in Reserveliste einfügen
+	liste_einfuegen(&reserve_anf_ptr, &reserve_ende_ptr, reserve_ptr, reserve_ptr);
+
+	// Letztes Element löschen
+	reserve_ptr = liste_loeschen(&anfang_ptr, &ende_ptr, ende_ptr);
+	// gelöschtes Element in Reserveliste einfügen
+	liste_einfuegen(&reserve_anf_ptr, &reserve_ende_ptr, reserve_ptr, reserve_ende_ptr->next_ptr);
+
+	// Verbleibendes erstes Element löschen
+	reserve_ptr = liste_loeschen(&anfang_ptr, &ende_ptr, anfang_ptr);
+	// gelöschtes Element in Reserveliste einfügen
+	liste_einfuegen(&reserve_anf_ptr, &reserve_ende_ptr, reserve_ptr, reserve_ende_ptr->next_ptr);
+
+	// ? Liste leer
+	// Durchlaufen mit allgemeiner Funktion
+	printf("Durchlaufen mit allgemeiner Funktion (lange Ausgabe):\n");
+	n = liste_durchlaufen(anfang_ptr, vorwaerts, print_element);
+	printf("Anzahl der durchlaufenen Listenelemente: %d\n", n);
+
+	printf("Durchlaufen mit allgemeiner Funktion (kurze Ausgabe):\n");
+	n = liste_durchlaufen(ende_ptr, rueckwaerts, print_element_kurz);
+	printf("Anzahl der durchlaufenen Listenelemente: %d\n", n);
+
+	printf("Durchlaufen mit allgemeiner Funktion (OHNE Ausgabe):\n");
+	n = liste_durchlaufen(anfang_ptr, vorwaerts, NULL);
+	printf("Anzahl der durchlaufenen Listenelemente: %d\n", n);
+
+	// ! Aufgabe 5.2
+	// Reserveliste ausgeben
+	printf("\nRESERVELISTE:\n");
+	printf("Durchlaufen mit allgemeiner Funktion (kurze Ausgabe):\n");
+	n = liste_durchlaufen(reserve_ende_ptr, rueckwaerts, print_element_kurz);
+	printf("Anzahl der durchlaufenen Listenelemente: %d\n", n);
+
+	// Durchlaufen der Verkettung
+	printf("Liste durchlaufen:\n");
+	lauf_ptr = reserve_anf_ptr;
+	while (lauf_ptr != NULL)
+	{
+		if (0)
+			print_element_by_val(*lauf_ptr);
+		else
+			print_element(lauf_ptr);
+		// Fortschalten
+		lauf_ptr = lauf_ptr->next_ptr;
+	} // while
+	printf("\n");
+
+	printf("ENDE!!! \n\n");
 
 	return 0;
 } /* main */
@@ -288,56 +352,47 @@ int liste_durchlaufen(struct flexibler_struct_typ *einstiegs_ptr,
 } // liste_durchlaufen
 
 /**
- *
+ * ! Aufgabe 5.1
+ * Fügt ein Element rechts von dem übergebenen Element ein
  */
-void liste_einfuegen(struct flexibler_struct_typ *anfang_ptr,
-					 struct flexibler_struct_typ *ende_ptr,
+void liste_einfuegen(struct flexibler_struct_typ **anfang_ptr,
+					 struct flexibler_struct_typ **ende_ptr,
 					 struct flexibler_struct_typ *neu_ptr,
 					 struct flexibler_struct_typ *liste_ptr)
 {
-	
-
-
-
-
-
-
-
-
-
-
-
 
 	// Element an Position des Pointers liste_ptr einhaengen
-	if (anfang_ptr == NULL)
+	if (*anfang_ptr == NULL)
 	{
-		if (ende_ptr != NULL)
+		if (*ende_ptr != NULL)
 		{
+			// Fehler bei Übergabe der Pointer
 			printf("return EXIT_FAILURE\n");
 		}
 		// leere Liste
-		anfang_ptr = neu_ptr;
-		ende_ptr = neu_ptr;
+		*anfang_ptr = neu_ptr;
+		*ende_ptr = neu_ptr;
 	}
 	else
 	{
 		if (liste_ptr == NULL)
 		{
 			// als erstes Element einfuegen
-			neu_ptr->next_ptr = anfang_ptr;
-			anfang_ptr->back_ptr = neu_ptr;
-			anfang_ptr = neu_ptr;
+			neu_ptr->next_ptr = *anfang_ptr;
+			(*anfang_ptr)->back_ptr = neu_ptr;
+			(*anfang_ptr) = neu_ptr;
 		}
 		else
 		{
 			// in die Liste nach Pointer liste_ptr einfuegen
 			neu_ptr->next_ptr = liste_ptr->next_ptr;
-			neu_ptr->back_ptr = liste_ptr;
+			neu_ptr->next_ptr = liste_ptr;
 			liste_ptr->next_ptr = neu_ptr;
-			if (&neu_ptr->next_ptr == NULL)
+
+			if (neu_ptr->next_ptr == NULL)
 			{
 				// am Ende der Liste einfuegen
-				ende_ptr = neu_ptr;
+				*ende_ptr = neu_ptr;
 			}
 			else
 			{
@@ -346,3 +401,44 @@ void liste_einfuegen(struct flexibler_struct_typ *anfang_ptr,
 		}
 	}
 } // liste_einfuegen
+
+/**
+ * ! Aufgabe 5.2
+ * Löscht ein entsprechendes Element aus der Liste
+ */
+struct flexibler_struct_typ *liste_loeschen(struct flexibler_struct_typ **anfang_ptr,
+											struct flexibler_struct_typ **ende_ptr,
+											struct flexibler_struct_typ *loesch_ptr)
+{
+	if (loesch_ptr == NULL)
+	{
+		printf("LOESCH_PTR_ERROR\n");
+		return loesch_ptr;
+	}
+	else
+	{
+		if (*anfang_ptr == loesch_ptr)
+		{
+			// erstes Element löschen - NULL, wenn Liste leer
+			*anfang_ptr = loesch_ptr->next_ptr;
+		}
+		if (*ende_ptr == loesch_ptr)
+		{
+			// letztes Element löschen - NULL, wenn Liste leer
+			*ende_ptr = loesch_ptr->back_ptr;
+		}
+		if (loesch_ptr->next_ptr != NULL)
+		{
+			// Verkettung bei Nachfolger korrigieren
+			loesch_ptr->next_ptr->back_ptr = loesch_ptr->back_ptr;
+		}
+		if (loesch_ptr->back_ptr != NULL)
+		{
+			// Verkettung bei Vorgänger korrigieren
+			loesch_ptr->back_ptr->next_ptr = loesch_ptr->next_ptr;
+		}
+		loesch_ptr->next_ptr = NULL;
+		loesch_ptr->back_ptr = NULL;
+		return loesch_ptr;
+	}
+} // liste_loeschen
