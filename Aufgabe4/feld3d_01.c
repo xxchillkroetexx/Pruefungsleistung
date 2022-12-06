@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 	{
 		// ! Aufgabe 4.3
 		// TODO
-		// ! nixe funktionieren!
+		// ! nixe funktionari!
 		matrix_3d = felder_erstellen_wie_java(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
 	else
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		matrix_3d_anf = realloc(matrix_3d_anf, 0);
+		matrix_3d_anf = (double *)realloc(matrix_3d_anf, 0);
 		/*
 		! Aufgabe 4.2
 
@@ -355,7 +355,7 @@ void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 			zeilen_anfangs_ptr += spalten_n;
 		}
 	}
-	
+
 	*matrix_3do = matrix_3d;
 
 } // zugriffsfelder_erstellen_by_ref
@@ -405,6 +405,6 @@ void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 /**
  * ! Aufgabe 4.11
  * Richtig wäre das Anlegen eines neuen Zeigers. Erst wenn die Speicherzuweisung erfolgreich war wird der Zeiger heap_ptr geändert.
- * Schlägt die Speicherzuweisung fehl, wird der heap_ptr genullt und der Speicher, auf den der Pointer vorher gezeigt hat, wird zu 
+ * Schlägt die Speicherzuweisung fehl, wird der heap_ptr genullt und der Speicher, auf den der Pointer vorher gezeigt hat, wird zu
  *  einer Speicherleiche.
  */
