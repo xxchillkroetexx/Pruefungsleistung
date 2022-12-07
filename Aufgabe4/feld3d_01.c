@@ -102,13 +102,13 @@ int main(int argc, char *argv[])
 		printf("zugriffsfelder_erstellen()\n");
 		matrix_3d = zugriffsfelder_erstellen(matrix_3d_anf, ebenen_n, zeilen_n, spalten_n);
 	}
-	else if (0)
+	else if (1)
 	{
 		// ! Aufgabe 4.3
 		// TODO
 		// ! nixe funktionari!
 		printf("felder_erstellen_wie_java()\n");
-		felder_erstellen_wie_java(matrix_3d, ebenen_n, zeilen_n, spalten_n);
+		felder_erstellen_wie_java(&matrix_3d, ebenen_n, zeilen_n, spalten_n);
 	}
 	else
 	{
@@ -306,32 +306,45 @@ void felder_erstellen_wie_java(double ***matrix_3d,
 {
 	int ebene, zeile, spalte;
 
-	int bytes_n;
 	double *dbl1_ptr;
-	double *matrix_3d_anf = **matrix_3d;
+	double ***matrix_3d_neu;
+	double *matrix_3d_anf;
 
-	bytes_n = sizeof(double *) * zeilen_n;
+	matrix_3d_neu = (double ***)calloc(ebenen_n, sizeof(*matrix_3d_neu));
+	assert(matrix_3d_neu != NULL);
+	matrix_3d_anf = &matrix_3d_neu;
+
 	for (ebene = 0; ebene < ebenen_n; ebene++)
 	{
 		/* Speicher belegen. */
-		matrix_3d[ebene] = (double **)malloc(bytes_n);
-		if (matrix_3d[ebene] == NULL)
+		matrix_3d_neu[ebene] = (double **)calloc(zeilen_n, sizeof(**matrix_3d_neu));
+		assert(matrix_3d_neu[ebene] != NULL);
+		if (matrix_3d_neu[ebene] == NULL)
 		{
-			printf("Kein Speicher mehr verfuegbar fuer matrix_3d[ebene=%d].\n",
+			printf("Kein Speicher mehr verfuegbar fuer matrix_3d_neu[ebene=%d].\n",
 				   ebene);
 			exit(EXIT_FAILURE);
 		}
+
 		/* Aktuelles Zeigerfeld durchlaufen und jeweils
 			die Zeilenanfangszeiger einspeichern. */
-		dbl1_ptr = matrix_3d_anf + ebene * zeilen_n * spalten_n;
+		dbl1_ptr = (double *)malloc(spalten_n * sizeof(double));
+		assert(dbl1_ptr != NULL);
+
+		*dbl1_ptr = *(matrix_3d_anf + ebene * zeilen_n * spalten_n);
 		for (zeile = 0; zeile < zeilen_n; zeile++)
 		{
 			*(*(matrix_3d + ebene) + zeile) = dbl1_ptr;
+			for (spalte = 0; spalte < spalten_n; spalte++)
+			{
+				*dbl1_ptr++ = ebene * 100 + zeile * 10 + spalte;
+			}
 			/* Zeilanfangszeiger auf Anfang der naechsten
 				Zeile erhoehen. */
 			dbl1_ptr += spalten_n;
 		}
 	}
+	*matrix_3d = matrix_3d_neu;
 
 	// Feldindex im Feld Speichern
 	// for (ebene = 0; ebene < ebenen_n; ebene++)
