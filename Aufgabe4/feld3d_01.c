@@ -30,9 +30,9 @@ void feld3d_init(double *matrix_3d_anf,
 				 int spalten_n);
 // ! Aufgabe 4.3
 // Ein Feld wie in Java erstellen
-char ***felder_erstellen_wie_java(int ebenen_n,
-								  int zeilen_n,
-								  int spalten_n);
+double ***felder_erstellen_wie_java(int ebenen_n,
+									int zeilen_n,
+									int spalten_n);
 // ! Aufgabe 4.4
 void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 									 const double *feld_anf_ptr,
@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 		// ! Aufgabe 4.3
 		printf("felder_erstellen_wie_java()\n");
 		matrix_3d = felder_erstellen_wie_java(ebenen_n, zeilen_n, spalten_n);
+		printf("Javafeld erstellt\n");
 	}
 	else
 	{
@@ -295,9 +296,9 @@ void feld3d_init(double *matrix_3d_anf,
 /**
  * ! Aufgabe 4.3
  */
-char ***felder_erstellen_wie_java(int ebenen_n,
-								  int zeilen_n,
-								  int spalten_n)
+double ***felder_erstellen_wie_java(int ebenen_n,
+									int zeilen_n,
+									int spalten_n)
 {
 	int ebene, zeile, spalte;
 
@@ -305,7 +306,7 @@ char ***felder_erstellen_wie_java(int ebenen_n,
 	double *javafeld_ptr;
 
 	// Speicher belegen fuer Ebene
-	matrix_3d = (double ***)calloc(ebenen_n, sizeof(double **));
+	matrix_3d = (double ***)calloc(ebenen_n, sizeof(*matrix_3d));
 	assert(matrix_3d != NULL);
 
 	for (ebene = 0; ebene < ebenen_n; ebene++)
@@ -313,20 +314,21 @@ char ***felder_erstellen_wie_java(int ebenen_n,
 		// Speicher belegen fuer Zeile
 		matrix_3d[ebene] = (double **)calloc(zeilen_n, sizeof(**matrix_3d));
 		assert(matrix_3d[ebene] != NULL);
-		if (matrix_3d[ebene] == NULL)
-		{
-			printf("Kein Speicher mehr verfuegbar fuer matrix_3d_neu[ebene=%d].\n",
-				   ebene);
-			exit(EXIT_FAILURE);
-		}
+		// if (matrix_3d[ebene] == NULL)
+		// {
+		// 	printf("Kein Speicher mehr verfuegbar fuer matrix_3d_neu[ebene=%d].\n",
+		// 		   ebene);
+		// 	exit(EXIT_FAILURE);
+		// }
 
 		for (zeile = 0; zeile < zeilen_n; zeile++)
 		{
 			// Speicher belegen fuer Spalte
 			javafeld_ptr = (double *)malloc(spalten_n * sizeof(double));
+			matrix_3d[ebene][zeile] = javafeld_ptr;
 			if (1)
 			{
-				printf("javafeld_ptr = %p", javafeld_ptr);
+				printf("javafeld_ptr = %p\n", javafeld_ptr);
 			}
 
 			for (spalte = 0; spalte < spalten_n; spalte++)
