@@ -30,10 +30,9 @@ void feld3d_init(double *matrix_3d_anf,
 				 int spalten_n);
 // ! Aufgabe 4.3
 // Ein Feld wie in Java erstellen
-void felder_erstellen_wie_java(double ***matrix_3d,
-							   int ebenen_n,
-							   int zeilen_n,
-							   int spalten_n);
+char ***felder_erstellen_wie_java(int ebenen_n,
+								  int zeilen_n,
+								  int spalten_n);
 // ! Aufgabe 4.4
 void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 									 const double *feld_anf_ptr,
@@ -105,10 +104,8 @@ int main(int argc, char *argv[])
 	else if (1)
 	{
 		// ! Aufgabe 4.3
-		// TODO
-		// ! nixe funktionari!
 		printf("felder_erstellen_wie_java()\n");
-		felder_erstellen_wie_java(&matrix_3d, ebenen_n, zeilen_n, spalten_n);
+		matrix_3d = felder_erstellen_wie_java(ebenen_n, zeilen_n, spalten_n);
 	}
 	else
 	{
@@ -297,70 +294,49 @@ void feld3d_init(double *matrix_3d_anf,
 
 /**
  * ! Aufgabe 4.3
- * TODO
  */
-void felder_erstellen_wie_java(double ***matrix_3d,
-							   int ebenen_n,
-							   int zeilen_n,
-							   int spalten_n)
+char ***felder_erstellen_wie_java(int ebenen_n,
+								  int zeilen_n,
+								  int spalten_n)
 {
 	int ebene, zeile, spalte;
 
-	double *dbl1_ptr;
-	double ***matrix_3d_neu;
-	double *matrix_3d_anf;
+	double ***matrix_3d;
+	double *javafeld_ptr;
 
-	matrix_3d_neu = (double ***)calloc(ebenen_n, sizeof(*matrix_3d_neu));
-	assert(matrix_3d_neu != NULL);
-	matrix_3d_anf = &matrix_3d_neu;
+	// Speicher belegen fuer Ebene
+	matrix_3d = (double ***)calloc(ebenen_n, sizeof(double **));
+	assert(matrix_3d != NULL);
 
 	for (ebene = 0; ebene < ebenen_n; ebene++)
 	{
-		/* Speicher belegen. */
-		matrix_3d_neu[ebene] = (double **)calloc(zeilen_n, sizeof(**matrix_3d_neu));
-		assert(matrix_3d_neu[ebene] != NULL);
-		if (matrix_3d_neu[ebene] == NULL)
+		// Speicher belegen fuer Zeile
+		matrix_3d[ebene] = (double **)calloc(zeilen_n, sizeof(**matrix_3d));
+		assert(matrix_3d[ebene] != NULL);
+		if (matrix_3d[ebene] == NULL)
 		{
 			printf("Kein Speicher mehr verfuegbar fuer matrix_3d_neu[ebene=%d].\n",
 				   ebene);
 			exit(EXIT_FAILURE);
 		}
 
-		/* Aktuelles Zeigerfeld durchlaufen und jeweils
-			die Zeilenanfangszeiger einspeichern. */
-		dbl1_ptr = (double *)malloc(spalten_n * sizeof(double));
-		assert(dbl1_ptr != NULL);
-
-		*dbl1_ptr = *(matrix_3d_anf + ebene * zeilen_n * spalten_n);
 		for (zeile = 0; zeile < zeilen_n; zeile++)
 		{
-			*(*(matrix_3d + ebene) + zeile) = dbl1_ptr;
+			// Speicher belegen fuer Spalte
+			javafeld_ptr = (double *)malloc(spalten_n * sizeof(double));
+			if (1)
+			{
+				printf("javafeld_ptr = %p", javafeld_ptr);
+			}
+
 			for (spalte = 0; spalte < spalten_n; spalte++)
 			{
-				*dbl1_ptr++ = ebene * 100 + zeile * 10 + spalte;
+				*javafeld_ptr++ = ebene * 100 + zeile * 10 + spalte;
 			}
-			/* Zeilanfangszeiger auf Anfang der naechsten
-				Zeile erhoehen. */
-			dbl1_ptr += spalten_n;
 		}
 	}
-	*matrix_3d = matrix_3d_neu;
+	return matrix_3d;
 
-	// Feldindex im Feld Speichern
-	// for (ebene = 0; ebene < ebenen_n; ebene++)
-	//{
-	//	for (zeile = 0; zeile < zeilen_n; zeile++)
-	//	{
-	//		for (spalte = 0; spalte < spalten_n; spalte++)
-	//		{
-	//			// ? matrix_3d[ebene][zeile][spalte] = ebene * 100 + zeile * 10 + spalte;
-	//
-	//			index = ebene * zeilen_n * spalten_n + zeile * spalten_n + spalte;
-	//			*(feld_anf_ptr + index) = ebene * 100 + zeile * 10 + spalte;
-	//			printf("matrix_3d_anf[ebene=%d][zeile=%d][spalte=%d]= %05.1lf'\n", ebene, zeile, spalte, *(feld_anf_ptr + index));
-	//		}
-	//	}
-	//}
 } //  felder_erstellen_wie_java
 
 /**
@@ -441,7 +417,8 @@ void zugriffsfelder_erstellen_by_ref(double ****matrix_3do,
 
 /**
  * ! Aufgabe 4.10
- * TODO
+ * Mit einem 64-Bit System kann ein Vielfaches mehr an Speicher angesprochen werden. Es sind generell mehr Speicheradressen
+ *  verfuegbar. Es kann allerdings immer noch zu einem fragmentierten Speicher kommen.
  */
 
 /**
